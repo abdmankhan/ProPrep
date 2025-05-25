@@ -142,7 +142,8 @@ const useAuthStore = create((set) => ({
       const res = await axios.get(`${config.apiUrl}/api/auth/getProfile`, {
         withCredentials: true,
       });
-      set({ user: res.data.user });
+      // console.log(res.data);
+      set({ user: res.data });
       return res.data; // Return data for console logging in component
     } catch (error) {
       set({ user: null });

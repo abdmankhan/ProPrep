@@ -160,12 +160,12 @@ const getProfile = asyncHandler(async (req, res) => {
 const googleSignin = async (req, res) => {
   try {
     const { accessToken } = req.body;
-    const resk = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+    const userProfile = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    const googleUser = await resk.json();
+    const googleUser = await userProfile.json();
     // console.log("Google user:", googleUser);
     console.log(" Google user logged in :", googleUser.email);
     let user = await User.findOne({ email: googleUser.email });
