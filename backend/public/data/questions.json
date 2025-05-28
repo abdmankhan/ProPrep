@@ -1,0 +1,214 @@
+[
+  {
+    "id": "q1",
+    "text": "What is polymorphism in OOP?",
+    "options": [
+      "Ability of a function to take multiple forms",
+      "Hiding internal implementation details",
+      "Binding data and methods together",
+      "Defining classes without methods"
+    ],
+    "correct": 0
+  },
+  {
+    "id": "q2",
+    "text": "Which HTTP status code means 'Not Found'?",
+    "options": ["200", "301", "403", "404"],
+    "correct": 3
+  },
+  {
+    "id": "q3",
+    "text": "What is the main purpose of a constructor in a class?",
+    "options": [
+      "To destroy objects",
+      "To initialize object properties",
+      "To handle errors",
+      "To create static methods"
+    ],
+    "correct": 1
+  },
+  {
+    "id": "q4",
+    "text": "Which of these is NOT a JavaScript data type?",
+    "options": ["Boolean", "Integer", "Undefined", "Symbol"],
+    "correct": 1
+  },
+  {
+    "id": "q5",
+    "text": "What does CSS stand for?",
+    "options": [
+      "Computer Style Sheets",
+      "Cascading Style Sheets",
+      "Creative Style Sheets",
+      "Colorful Style Sheets"
+    ],
+    "correct": 1
+  },
+  {
+    "id": "q6",
+    "text": "Which of these is a valid way to declare a variable in JavaScript?",
+    "options": ["variable x = 5", "v x = 5", "let x = 5", "x := 5"],
+    "correct": 2
+  },
+  {
+    "id": "q7",
+    "text": "What is the purpose of the 'use strict' directive in JavaScript?",
+    "options": [
+      "To make code run faster",
+      "To enable strict mode and catch common coding mistakes",
+      "To allow use of restricted keywords",
+      "To disable error checking"
+    ],
+    "correct": 1
+  },
+  {
+    "id": "q8",
+    "text": "Which HTTP method is used to send data to a server?",
+    "options": ["GET", "POST", "HEAD", "OPTIONS"],
+    "correct": 1
+  },
+  {
+    "id": "q9",
+    "text": "What is the correct way to create a function in JavaScript?",
+    "options": [
+      "function:myFunction()",
+      "function myFunction()",
+      "function = myFunction()",
+      "function -> myFunction()"
+    ],
+    "correct": 1
+  },
+  {
+    "id": "q10",
+    "text": "Which of these is NOT a valid HTML5 semantic element?",
+    "options": ["<header>", "<footer>", "<content>", "<nav>"],
+    "correct": 2
+  },
+  {
+    "id": "q11",
+    "text": "What is the purpose of the 'async' keyword in JavaScript?",
+    "options": [
+      "To make code run synchronously",
+      "To declare an asynchronous function",
+      "To create a new thread",
+      "To pause code execution"
+    ],
+    "correct": 1
+  },
+  {
+    "id": "q12",
+    "text": "Which of these is a valid way to comment in CSS?",
+    "options": [
+      "// This is a comment",
+      "/* This is a comment */",
+      "<!-- This is a comment -->",
+      "# This is a comment"
+    ],
+    "correct": 1
+  },
+  {
+    "id": "q13",
+    "text": "What is the purpose of the 'git clone' command?",
+    "options": [
+      "To create a new branch",
+      "To copy a repository to your local machine",
+      "To delete a repository",
+      "To update your local repository"
+    ],
+    "correct": 1
+  },
+  {
+    "id": "q14",
+    "text": "Which of these is NOT a valid way to create an array in JavaScript?",
+    "options": [
+      "let arr = []",
+      "let arr = new Array()",
+      "let arr = array()",
+      "let arr = Array.of()"
+    ],
+    "correct": 2
+  },
+  {
+    "id": "q15",
+    "text": "What is the purpose of the 'localStorage' object in JavaScript?",
+    "options": [
+      "To store data temporarily in the browser",
+      "To store data permanently in the browser",
+      "To store data on the server",
+      "To store data in cookies"
+    ],
+    "correct": 1
+  },
+  {
+    "id": "q16",
+    "text": "Which of these is a valid way to create a promise in JavaScript?",
+    "options": [
+      "new Promise()",
+      "createPromise()",
+      "Promise.create()",
+      "new Promise(function(resolve, reject) {})"
+    ],
+    "correct": 3
+  },
+  {
+    "id": "q17",
+    "text": "What is the purpose of the 'npm' command?",
+    "options": [
+      "To create new projects",
+      "To manage Node.js packages",
+      "To run JavaScript files",
+      "To debug code"
+    ],
+    "correct": 1
+  },
+  {
+    "id": "q18",
+    "text": "Which of these is NOT a valid way to select an element in CSS?",
+    "options": ["#id", ".class", "@element", "element"],
+    "correct": 2
+  },
+  {
+    "id": "q19",
+    "text": "What is the purpose of the 'try-catch' block in JavaScript?",
+    "options": [
+      "To create loops",
+      "To handle errors",
+      "To create functions",
+      "To declare variables"
+    ],
+    "correct": 1
+  },
+  {
+    "id": "q20",
+    "text": "Which of these is a valid way to create a class in JavaScript?",
+    "options": [
+      "class = MyClass",
+      "class MyClass",
+      "create class MyClass",
+      "new class MyClass"
+    ],
+    "correct": 1
+  },
+  {
+    "id": "q21",
+    "text": "What is the purpose of the 'useEffect' hook in React?",
+    "options": [
+      "To create new components",
+      "To handle side effects in functional components",
+      "To manage state",
+      "To create routes"
+    ],
+    "correct": 1
+  },
+  {
+    "id": "q22",
+    "text": "Which of these is NOT a valid way to export a module in JavaScript?",
+    "options": [
+      "export default",
+      "export const",
+      "export function",
+      "export module"
+    ],
+    "correct": 3
+  }
+]

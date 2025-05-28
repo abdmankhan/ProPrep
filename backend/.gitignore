@@ -38,3 +38,6 @@ coverage/
 *.log
 *.tmp
 .temp/
+
+# Miscellaneous
+testGemini.js
