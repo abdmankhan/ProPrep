@@ -7,7 +7,6 @@ connectDB();
 const PORT = process.env.PORT || 5556;
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/authRoutes.js";
-import questionRoutes from "./routes/questionRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 
 const app = express();
@@ -21,9 +20,12 @@ app.use(cors({
   credentials: true
 }));
 
+// RestAPI Routes
+
 app.use("/api/auth", authRoutes);
-app.use("/api/questions", questionRoutes);
 app.use("/api/admin", adminRoutes);
+
+
 app.get("/", (req, res) => {
     res.status(200).json({
         message: "I am working fine at http://localhost:5555/",

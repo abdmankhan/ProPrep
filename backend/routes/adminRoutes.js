@@ -8,13 +8,18 @@ import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.get("/subjects", protect, getSubjects);
-router.post("/topics", protect, addTopic);
-router.get("/topics", protect, getTopics);
+const mcqRouter = express.Router();
+router.use('/mcq', mcqRouter);
 
-router.post("/generate-questions", protect, generateQuestions);
 
-router.post("/upload-questions", protect, uploadQuestions);
+
+mcqRouter.get("/subjects", protect, getSubjects);
+mcqRouter.post("/topics", protect, addTopic);
+mcqRouter.get("/topics", protect, getTopics);
+
+mcqRouter.post("/generate-questions", protect, generateQuestions);
+
+mcqRouter.post("/upload-questions", protect, uploadQuestions);
 
 export default router;
 

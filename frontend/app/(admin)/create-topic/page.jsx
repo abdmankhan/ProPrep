@@ -23,7 +23,7 @@ export default function CreateTopicPage() {
     const fetchSubjects = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5555/api/admin/subjects",
+          "http://localhost:5555/api/admin/mcq/subjects",
           { withCredentials: true }
         );
         setSubjects(response.data);
@@ -108,7 +108,7 @@ export default function CreateTopicPage() {
       for (const topicName of topicNames) {
         try {
           const response = await axios.post(
-            "http://localhost:5555/api/admin/topics",
+            "http://localhost:5555/api/admin/mcq/topics",
             {
               subjectId,
               name: topicName,

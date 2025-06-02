@@ -20,14 +20,14 @@ export default function GenerateQuestionsPage({ user }) {
   const [topicIds, setTopicIds] = useState([]);
   const [lod, setLod] = useState("3");
   const [count, setCount] = useState(5);
+  const [questionType, setQuestionType] = useState("MCQ");
   const [preview, setPreview] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
   useEffect(() => {
     const fetchSubjects = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5555/api/admin/subjects",
+          "http://localhost:5555/api/admin/mcq/subjects",
           {
             withCredentials: true,
           }
@@ -45,7 +45,7 @@ export default function GenerateQuestionsPage({ user }) {
     const fetchTopics = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5555/api/admin/topics?subjectId=${subjectId}`,
+          `http://localhost:5555/api/admin/mcq/topics?subjectId=${subjectId}`,
           { withCredentials: true }
         );
         setTopics(response.data);
@@ -65,17 +65,18 @@ export default function GenerateQuestionsPage({ user }) {
     try {
       setIsLoading(true);
       const { data } = await axios.post(
-        "http://localhost:5555/api/admin/generate-questions",
+        "http://localhost:5555/api/admin/mcq/generate-questions",
         {
           subjectId,
           topicIds,
           lod: Number(lod),
           count: Number(count),
+          questionType, // Include question type
         },
         { withCredentials: true }
       );
 
-      console.log("Response from server:", data);
+
 
       // Process data from API response
       if (Array.isArray(data) && data.length > 0) {
@@ -87,6 +88,7 @@ export default function GenerateQuestionsPage({ user }) {
           text: q.text || q.question || "",
           options: q.options || [],
           correct: q.correct !== undefined ? q.correct : q.correctIndex,
+          questionType: q.questionType || "MCQ", // Add question type
         }));
         setPreview(questionsWithSelected);
       } else {
@@ -103,6 +105,8 @@ export default function GenerateQuestionsPage({ user }) {
     }
   };
   const addToDB = async () => {
+    // console.log("Adding to DB with preview:", preview);
+    // preview is actually an array of questions, so don't confuse it with something UI related.
     try {
       if (!Array.isArray(preview) || preview.length === 0) {
         alert("No questions to add to the database.");
@@ -116,19 +120,43 @@ export default function GenerateQuestionsPage({ user }) {
         return;
       }
 
-      // Make sure we have all required properties
-      const formattedQuestions = selected.map((q) => ({
-        text: q.text || q.question || "",
-        options: Array.isArray(q.options) ? q.options : [],
-        correct: q.correct !== undefined ? q.correct : q.correctIndex,
-        lod: Number(lod),
-      }));
+      // Get topic information for formatting
+      const topicInfo = {};
+      topics.forEach((topic) => {
+        topicInfo[topic._id] = topic.name;
+      });
 
+      // Make sure we have all required properties
+      const formattedQuestions = selected.map((q) => {
+        // Format topics array correctly - use question's topics if available
+        let questionTopics = q.topics;
+
+        // If no topics are set, use selected topic IDs
+        if (
+          !questionTopics ||
+          !Array.isArray(questionTopics) ||
+          questionTopics.length === 0
+        ) {
+          questionTopics = topicIds.map((topicId) => ({
+            topicId,
+            topicName: topicInfo[topicId] || "Unknown",
+          }));
+        }
+
+        return {
+          text: q.text || q.question || "",
+          options: Array.isArray(q.options) ? q.options : [],
+          correct: q.correct !== undefined ? q.correct : q.correctIndex,
+          lod: Number(lod),
+          topics: questionTopics,
+          questionType: q.questionType || "MCQ",
+        };
+      });
       await axios.post(
-        "http://localhost:5555/api/admin/upload-questions",
+        "http://localhost:5555/api/admin/mcq/upload-questions",
         {
           subjectId,
-          topicId: topicIds[0], // or enhance logic to assign per-question topic
+          topicId: topicIds[0], // Used as fallback for any question without topics
           questions: formattedQuestions,
           userEmail: user?.email || "anonymous",
         },
@@ -194,7 +222,7 @@ export default function GenerateQuestionsPage({ user }) {
             <SelectItem value="3">Mixed</SelectItem>
           </SelectContent>
         </Select>
-      </div>
+      </div>{" "}
       {/* Count Input */}
       <div className="space-y-1">
         <Label>Number of Questions</Label>
@@ -203,7 +231,27 @@ export default function GenerateQuestionsPage({ user }) {
           value={count}
           onChange={(e) => setCount(e.target.value)}
         />
-      </div>{" "}
+      </div>
+      {/* Question Type Selection */}
+      <div className="space-y-1">
+        <Label>Question Type</Label>
+        <Select value={questionType} onValueChange={setQuestionType}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="MCQ">
+              Multiple Choice (Single Correct)
+            </SelectItem>
+            <SelectItem value="Multiple Correct">
+              Multiple Choice (Multiple Correct)
+            </SelectItem>
+            <SelectItem value="Type in the answer(TITA)">
+              Type in the answer (TITA)
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
       <Button
         onClick={generate}
         disabled={!subjectId || topicIds.length === 0 || isLoading}
@@ -227,7 +275,7 @@ export default function GenerateQuestionsPage({ user }) {
                       return cp;
                     });
                   }}
-                />
+                />{" "}
                 <div className="w-full space-y-1">
                   <Input
                     value={q.text || ""}
@@ -241,6 +289,30 @@ export default function GenerateQuestionsPage({ user }) {
                     }}
                     placeholder="Edit question text"
                   />
+
+                  {/* Display question topics */}
+                  {q.topics &&
+                    Array.isArray(q.topics) &&
+                    q.topics.length > 0 && (
+                      <div className="flex flex-wrap gap-1 my-1">
+                        {q.topics.map((topic, ti) => (
+                          <span
+                            key={ti}
+                            className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded"
+                          >
+                            {topic.topicName}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                  {/* Question type badge */}
+                  <div className="flex items-center my-1">
+                    <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">
+                      {q.questionType || "MCQ"}
+                    </span>
+                  </div>
+
                   <div className="pl-2 space-y-1">
                     {Array.isArray(q.options) ? (
                       q.options.map((opt, oi) => <p key={oi}>• {opt}</p>)
