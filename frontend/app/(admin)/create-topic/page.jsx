@@ -90,7 +90,7 @@ export default function CreateTopicPage() {
         </div>
       ),
       {
-        duration: 10000, // 10 seconds
+        duration: 5000, // 5 seconds
       }
     );
   };

@@ -119,6 +119,7 @@
   }
   body {
     @apply bg-background text-foreground;
+    background-color: oklch(1 0 0); /* Ensure light background by default */
   }
 }
 

@@ -70,7 +70,7 @@ const login = asyncHandler(async (req, res) => {
     console.log("✅ Login successful");
   } else {
     return res.status(401).json({
-      message: "❌ Invalid email or password"
+      message: "❌ Invalid email or password",
     });
   }
 });
@@ -87,8 +87,9 @@ const forgotPassword = asyncHandler(async (req, res) => {
     throw new Error("❌ User not found");
   }
 
-  const resetToken = jwt.sign( // sign method takes 3 arguments: payload, secret, options, that is userid that was used to generate the token, secret key that was used to generate the token, and options that is the expiration time of the token
-    { id: user._id }, 
+  const resetToken = jwt.sign(
+    // sign method takes 3 arguments: payload, secret, options, that is userid that was used to generate the token, secret key that was used to generate the token, and options that is the expiration time of the token
+    { id: user._id },
     process.env.JWT_FORGET_PASSWORD_SECRET,
     { expiresIn: "15m" }
   );
@@ -116,7 +117,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
 const resetPassword = asyncHandler(async (req, res) => {
   const { token, password } = req.body;
   const decoded = jwt.verify(token, process.env.JWT_FORGET_PASSWORD_SECRET);
-  
+
   const user = await User.findById(decoded.id);
   if (!user) {
     return res.status(400).json({
@@ -150,7 +151,22 @@ const logout = asyncHandler(async (req, res) => {
 // @access Private
 const getProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
-  res.status(200).json(user);
+
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  res.status(200).json({
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    bio: user.bio || "",
+    profileImage: user.profileImage || "",
+    skills: user.skills || [],
+    googleId: user.googleId,
+    memberSince: user.memberSince,
+  });
 });
 
 // @desc Google OAuth
@@ -160,11 +176,14 @@ const getProfile = asyncHandler(async (req, res) => {
 const googleSignin = async (req, res) => {
   try {
     const { accessToken } = req.body;
-    const userProfile = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+    const userProfile = await fetch(
+      "https://www.googleapis.com/oauth2/v3/userinfo",
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
     const googleUser = await userProfile.json();
     // console.log("Google user:", googleUser);
     console.log(" Google user logged in :", googleUser.email);
@@ -203,6 +222,87 @@ const googleSignin = async (req, res) => {
   }
 };
 
+// @desc Update user profile
+// @route PUT /api/auth/update-profile
+// @access Private
+const updateProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  // Update basic fields if provided
+  user.name = req.body.name || user.name;
+  user.email = req.body.email || user.email;
+
+  // Update optional fields if provided
+  if (req.body.bio !== undefined) {
+    user.bio = req.body.bio;
+  }
+
+  if (req.body.profileImage !== undefined) {
+    user.profileImage = req.body.profileImage;
+  }
+
+  // Update skills if provided
+  if (req.body.skills) {
+    user.skills = req.body.skills;
+  }
+
+  const updatedUser = await user.save();
+
+  res.status(200).json({
+    _id: updatedUser._id,
+    name: updatedUser.name,
+    email: updatedUser.email,
+    bio: updatedUser.bio || "",
+    profileImage: updatedUser.profileImage || "",
+    skills: updatedUser.skills || [],
+    googleId: updatedUser.googleId,
+    memberSince: updatedUser.memberSince,
+  });
+});
+
+// @desc Update user password
+// @route PUT /api/auth/update-password
+// @access Private
+const updatePassword = asyncHandler(async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+
+  if (!currentPassword || !newPassword) {
+    res.status(400);
+    throw new Error("Please provide both current and new password");
+  }
+
+  const user = await User.findById(req.user._id);
+
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  // If user registered with Google and doesn't have a password
+  if (!user.password) {
+    res.status(400);
+    throw new Error("You registered with Google. Please set a password first");
+  }
+
+  // Check if current password matches
+  const isMatch = await user.matchPassword(currentPassword);
+  if (!isMatch) {
+    res.status(401);
+    throw new Error("Current password is incorrect");
+  }
+
+  // Update password
+  user.password = newPassword;
+  await user.save();
+
+  res.status(200).json({ message: "Password updated successfully" });
+});
+
 export {
   signup,
   login,
@@ -211,4 +311,6 @@ export {
   getProfile,
   forgotPassword,
   resetPassword,
+  updateProfile,
+  updatePassword,
 };

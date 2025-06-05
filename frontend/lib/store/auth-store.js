@@ -56,7 +56,7 @@ const useAuthStore = create((set) => ({
       const res = await axios.post(
         `${config.apiUrl}/api/auth/google`,
         { accessToken },
-        { withCredentials: true } 
+        { withCredentials: true }
       );
       set({ user: res.data.user });
       toast.success("Welcome! Google login successful");
@@ -135,7 +135,6 @@ const useAuthStore = create((set) => ({
       set({ isLoading: false });
     }
   },
-
   fetchUser: async () => {
     set({ isLoading: true });
     try {
@@ -148,6 +147,49 @@ const useAuthStore = create((set) => ({
     } catch (error) {
       set({ user: null });
       // Don't show toast for fetchUser as it's used for session checks
+      throw error;
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  updateProfile: async (userData) => {
+    set({ isLoading: true });
+    try {
+      const res = await axios.put(
+        `${config.apiUrl}/api/auth/update-profile`,
+        userData,
+        { withCredentials: true }
+      );
+      set({ user: res.data });
+      toast.success("Profile updated successfully");
+      return res.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        "Failed to update profile. Please try again.";
+      toast.error(errorMessage);
+      throw error;
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  updatePassword: async (currentPassword, newPassword) => {
+    set({ isLoading: true });
+    try {
+      const res = await axios.put(
+        `${config.apiUrl}/api/auth/update-password`,
+        { currentPassword, newPassword },
+        { withCredentials: true }
+      );
+      toast.success("Password updated successfully");
+      return res.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        "Failed to update password. Please try again.";
+      toast.error(errorMessage);
       throw error;
     } finally {
       set({ isLoading: false });

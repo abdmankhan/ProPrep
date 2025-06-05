@@ -3,7 +3,9 @@ import Subject from "../models/Subject.js";
 import Topic from "../models/Topic.js";
 import Question from "../models/Question.js";
 import User from "../models/User.js";
+import Test from "../models/Test.js";
 import { callGemini } from "../utils/gemini.js";
+import mongoose from "mongoose";
 
 // @desc    Get all subjects
 // @route   GET /api/admin/subjects
@@ -117,79 +119,6 @@ const generateQuestions = asyncHandler(async (req, res) => {
 // @desc    Upload questions from file
 // @route   POST /api/admin/mcq/upload-questions
 // @access  Private
-// const uploadQuestions = asyncHandler(async (req, res) => {
-//   const { subjectId, topicId, questions, userEmail } = req.body;
-//   console.log("Received request data:", {
-//     subjectId,
-//     topicId,
-//     questionsCount: questions?.length,
-//     sampleQuestion: questions?.[0],
-//   });
-
-//   const user = await User.findOne({ email: userEmail });
-//   const userId = user ? user._id : null;
-
-//   // Get the topic information for the default topic
-//   const defaultTopic = await Topic.findById(topicId);
-
-//   if (!Array.isArray(questions) || questions.length === 0) {
-//     return res.status(400).json({ error: "No valid questions provided" });
-//   }
-
-//   const docs = questions.map((q) => {
-//     // Properly handle the topics array
-//     let questionTopics = [];
-
-//     // If topics is a valid array with topicId and topicName
-//     if (Array.isArray(q.topics) && q.topics.length > 0) {
-//       // Check if topics have the required structure
-//       if (q.topics[0].topicId) {
-//         // Already in correct format with topicId and topicName
-//         questionTopics = q.topics;
-//       } else {
-//         // Fallback to default topic
-//         questionTopics = [
-//           {
-//             topicId,
-//             topicName: defaultTopic?.name || "Unknown",
-//           },
-//         ];
-//       }
-//     } else {
-//       // No topics array, use default
-//       questionTopics = [
-//         {
-//           topicId,
-//           topicName: defaultTopic?.name || "Unknown",
-//         },
-//       ];
-//     }
-
-//     return {
-//       subject: subjectId,
-//       topics: questionTopics,
-//       text: q.text || "",
-//       options: Array.isArray(q.options) ? q.options : [],
-//       correct: typeof q.correct === "number" ? q.correct : 0,
-//       lod: typeof q.lod === "number" ? q.lod : 3,
-//       questionType: q.questionType || "MCQ",
-//       createdBy: userId,
-//     };
-//   });
-
-//   try {
-//     const result = await Question.insertMany(docs);
-//     console.log(`Successfully inserted ${result.length} questions`);
-//     res.status(201).json({ inserted: result.length });
-//   } catch (error) {
-//     console.error("Error inserting questions:", error);
-//     res.status(400).json({
-//       error: error.message,
-//       details: error.errors,
-//       sampleQuestion: docs[0],
-//     });
-//   }
-// });
 const uploadQuestions = async (req, res) => {
   try {
     const { subjectId, questions, userEmail } = req.body;
@@ -239,4 +168,58 @@ const uploadQuestions = async (req, res) => {
   }
 };
 
-export { getSubjects, addTopic, getTopics, generateQuestions, uploadQuestions };
+// @desc    Generate a test based on selected subject
+// @route   POST /api/admin/mcq/generate-test
+// @access  Private
+const getTestQuestions = asyncHandler(async (req, res) => {
+  const {subjectIds, lod, count} = req.body;
+  const questions = await Question.aggregate([
+    {
+      $match: {
+        subject: {
+          $in: subjectIds.map((id) => new mongoose.Types.ObjectId(id)),
+        },
+        lod: lod,
+      },
+    },
+    { $sample: { size: count } },
+    {
+      $project: {
+        text: 1,
+        options: 1,
+        correct: 1,
+      },
+    },
+  ]);
+  if (questions.length === 0) {
+    return res.status(404).json({ error: "No questions found for the selected criteria." });
+  }
+
+  res.json(questions);
+})
+
+// @desc    Generate a test based on selected subject
+// @route   POST /api/admin/mcq/generate-test
+// @access  Private
+const generateTest = asyncHandler( async (req, res) => {
+  const { name, subjectIds, questionIds, totalQuestions, timeLimit, shuffleQuestions, shuffleOptions } = req.body;
+  
+  // if (!name || !subjectIds || !Array.isArray(subjectIds) || subjectIds.length === 0) {
+  //   return res.status(400).json({ error: "Invalid test data provided." });
+  // }
+
+  const test = await Test.create({
+    name,
+    subjects: subjectIds.map(id => new mongoose.Types.ObjectId(id)),
+    questionIds: questionIds.map(id => new mongoose.Types.ObjectId(id)),
+    totalQuestions,
+    timeLimit,
+    shuffleQuestions,
+    shuffleOptions,
+    createdBy: req.user?._id,
+  });
+
+  res.status(201).json(test);
+})
+
+export { getSubjects, addTopic, getTopics, generateQuestions, uploadQuestions, getTestQuestions, generateTest };
