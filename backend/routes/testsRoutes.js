@@ -8,6 +8,7 @@ import {
   fetchTestResultById,
   fetchLeaderboardForTest,
   fetchTakenTestIds,
+  fetchUserAnalytics,
 } from "../controllers/testsController.js";
 
 const router = express.Router();
@@ -18,6 +19,7 @@ router.post("/submit/:id", protect, submitTest);
 router.post("/result", protect, fetchTestResultById);
 router.get("/leaderboard/:testId", protect, fetchLeaderboardForTest);
 router.get("/taken", protect, fetchTakenTestIds);
+router.get("/user/analytics", protect, fetchUserAnalytics);
 
 router.post("/:id", protect, fetchTest);
 

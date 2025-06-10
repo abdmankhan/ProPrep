@@ -253,6 +253,118 @@ const fetchTakenTestIds = asyncHandler(async (req, res) => {
   res.status(200).json({ takenTestIds });
 });
 
+// @desc    User analytics: all submissions, stats, and trends
+// @route   GET /api/user/analytics
+// @access  Private
+const fetchUserAnalytics = asyncHandler(async (req, res) => {
+  const userId = req.user?._id;
+
+  // Get all UserTest entries for this user, most recent first
+  const userTests = await UserTest.find({ user_id: userId })
+    .sort({ added_at: -1 })
+    .populate({
+      path: "test_result_id",
+      model: "TestResult",
+    });
+
+  // Prepare submissions array
+  const submissions = [];
+  let totalScore = 0,
+    totalQuestions = 0,
+    totalTime = 0,
+    bestScore = 0,
+    correctSum = 0,
+    incorrectSum = 0,
+    unattemptedSum = 0;
+  const scoreTrend = [];
+
+  for (const ut of userTests) {
+    const tr = ut.test_result_id;
+    if (!tr) continue;
+    // Fetch all questions for this test result to get correct answers
+    let correct = 0,
+      incorrect = 0,
+      unattempted = 0;
+    let questionCorrectMap = {};
+    if (Array.isArray(tr.questionIds) && tr.questionIds.length > 0) {
+      const questions = await Question.find(
+        { _id: { $in: tr.questionIds } },
+        { _id: 1, correct: 1 }
+      );
+      questions.forEach((q) => {
+        questionCorrectMap[q._id.toString()] = q.correct;
+      });
+    }
+    if (Array.isArray(tr.answers) && Array.isArray(tr.questionIds)) {
+      for (let i = 0; i < tr.answers.length; i++) {
+        const ans = tr.answers[i];
+        const qid = ans.questionId
+          ? ans.questionId.toString()
+          : tr.questionIds[i]
+          ? tr.questionIds[i].toString()
+          : null;
+        const correctIndex = qid ? questionCorrectMap[qid] : undefined;
+        if (ans.answerIndex === -1 || ans.answerIndex === undefined) {
+          unattempted++;
+        } else if (
+          correctIndex !== undefined &&
+          ans.answerIndex === correctIndex
+        ) {
+          correct++;
+        } else {
+          incorrect++;
+        }
+      }
+    }
+    submissions.push({
+      _id: tr._id,
+      test_id: tr.test_id,
+      test_name: tr.test_name,
+      score: tr.score,
+      totalQuestions: tr.totalQuestions,
+      percentage: tr.percentage,
+      timeTaken: tr.timeTaken,
+      taken_date_time: tr.taken_date_time,
+      correct,
+      incorrect,
+      unattempted,
+    });
+    totalScore += tr.score;
+    totalQuestions += tr.totalQuestions || 0;
+    totalTime += tr.timeTaken || 0;
+    if (tr.percentage > bestScore) bestScore = tr.percentage;
+    correctSum += correct;
+    incorrectSum += incorrect;
+    unattemptedSum += unattempted;
+    scoreTrend.push({
+      date: tr.taken_date_time,
+      score: tr.score,
+      percentage: tr.percentage,
+      accuracy: tr.totalQuestions ? (correct / tr.totalQuestions) * 100 : 0,
+    });
+  }
+
+  const totalTests = submissions.length;
+  const avgScore = totalTests
+    ? Math.round((totalScore / totalQuestions) * 100)
+    : 0;
+  const avgTime = totalTests ? Math.round(totalTime / totalTests) : 0;
+
+  res.status(200).json({
+    stats: {
+      totalTests,
+      avgScore,
+      bestScore: Math.round(bestScore),
+      avgTime,
+      correct: correctSum,
+      incorrect: incorrectSum,
+      unattempted: unattemptedSum,
+      scoreTrend,
+    },
+    submissions,
+  });
+});
+
 export {
   fetchTests,
   fetchTest,
@@ -261,4 +373,5 @@ export {
   fetchTestResultById,
   fetchLeaderboardForTest,
   fetchTakenTestIds,
+  fetchUserAnalytics,
 };
