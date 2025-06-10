@@ -1,4 +1,4 @@
-// components/ui/charts/PerformanceChart.jsx
+// components/ui/charts/AccuracyChart.jsx
 "use client";
 import { useEffect } from "react";
 import * as echarts from "echarts";
@@ -10,9 +10,9 @@ import {
   CardContent,
 } from "@/components/ui/card";
 
-export function PerformanceChart({ data = [], labels = [] }) {
+export function AccuracyChart({ data = [] }) {
   useEffect(() => {
-    const chart = echarts.init(document.getElementById("performance-chart"));
+    const chart = echarts.init(document.getElementById("accuracy-chart"));
     const option = {
       animation: false,
       tooltip: { trigger: "axis" },
@@ -21,21 +21,26 @@ export function PerformanceChart({ data = [], labels = [] }) {
         type: "category",
         boundaryGap: false,
         data:
-          labels.length > 0
-            ? labels
+          data.length > 0
+            ? data.map((d) => d.dateLabel)
             : ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
       },
-      yAxis: { type: "value" },
+      yAxis: {
+        type: "value",
+        min: 0,
+        max: 100,
+        axisLabel: { formatter: "{value}%" },
+      },
       series: [
         {
-          name: "Score",
+          name: "Accuracy",
           type: "line",
           data:
             data.length > 0
-              ? data
-              : [82, 93, 90, 94, 85, 92, 88],
+              ? data.map((d) => Math.round(d.accuracy ?? 0))
+              : [80, 85, 90, 88, 92, 95, 93],
           smooth: true,
-          lineStyle: { width: 3, color: "#2563eb" },
+          lineStyle: { width: 3, color: "#22c55e" },
           areaStyle: {
             color: {
               type: "linear",
@@ -44,8 +49,8 @@ export function PerformanceChart({ data = [], labels = [] }) {
               x2: 0,
               y2: 1,
               colorStops: [
-                { offset: 0, color: "rgba(37, 99, 235, 0.3)" },
-                { offset: 1, color: "rgba(37, 99, 235, 0.05)" },
+                { offset: 0, color: "rgba(34, 197, 94, 0.3)" },
+                { offset: 1, color: "rgba(34, 197, 94, 0.05)" },
               ],
             },
           },
@@ -61,16 +66,16 @@ export function PerformanceChart({ data = [], labels = [] }) {
       window.removeEventListener("resize", handleResize);
       chart.dispose();
     };
-  }, [data, labels]);
+  }, [data]);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Performance Trend</CardTitle>
-        <CardDescription>Your test scores over time</CardDescription>
+        <CardTitle>Accuracy Trend</CardTitle>
+        <CardDescription>Your accuracy (%) over time</CardDescription>
       </CardHeader>
       <CardContent>
-        <div id="performance-chart" className="h-[300px]"></div>
+        <div id="accuracy-chart" className="h-[300px]"></div>
       </CardContent>
     </Card>
   );

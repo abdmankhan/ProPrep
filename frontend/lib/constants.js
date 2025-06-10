@@ -1,7 +1,7 @@
 // lib/constants.js
 export const navItems = [
   { id: "dashboard", icon: "fas fa-home", label: "Dashboard", href: "/dashboard" },
-  { id: "analytics", icon: "fas fa-chart-line", label: "Analytics", href: "/analytics" },
+  // { id: "analytics", icon: "fas fa-chart-line", label: "Analytics", href: "/analytics" },
   { id: "practice", icon: "fas fa-file-alt", label: "Practice", href: "/practice" },
   { id: "profile", icon: "fas fa-user", label: "Profile", href: "/profile" },
   { id: "interviews", icon: "fas fa-video", label: "Mock Interviews", href: "/interviews" },
