@@ -8,6 +8,7 @@ const PORT = process.env.PORT || 5556;
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/authRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import testsRoutes from "./routes/testsRoutes.js";
 
 const app = express();
 
@@ -15,7 +16,7 @@ app.use(cookieParser());
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: 'http://localhost:3333',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   credentials: true
 }));
@@ -24,7 +25,7 @@ app.use(cors({
 
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
-
+app.use("/api/tests", testsRoutes);
 
 app.get("/", (req, res) => {
     res.status(200).json({

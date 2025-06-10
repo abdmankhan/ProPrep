@@ -1,5 +1,6 @@
 // components/dashboard/Sidebar.jsx
 "use client";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
@@ -42,19 +43,23 @@ export default function Sidebar({
       </div>
 
       <ScrollArea className="flex-1">
+        {" "}
         <div className="p-2">
           <nav className="space-y-1">
             {navItems.map((item) => (
-              <Button
-                key={item.id}
-                variant="ghost"
-                className={`w-full justify-start mb-1 !rounded-button whitespace-nowrap ${
-                  !sidebarOpen ? "justify-center" : ""
-                }`}
-              >
-                <i className={`${item.icon} ${sidebarOpen ? "mr-2" : ""}`}></i>
-                {sidebarOpen && <span>{item.label}</span>}
-              </Button>
+              <Link href={item.href || "#"} key={item.id} passHref>
+                <Button
+                  variant="ghost"
+                  className={`w-full justify-start mb-1 !rounded-button whitespace-nowrap ${
+                    !sidebarOpen ? "justify-center" : ""
+                  }`}
+                >
+                  <i
+                    className={`${item.icon} ${sidebarOpen ? "mr-2" : ""}`}
+                  ></i>
+                  {sidebarOpen && <span>{item.label}</span>}
+                </Button>
+              </Link>
             ))}
           </nav>
         </div>

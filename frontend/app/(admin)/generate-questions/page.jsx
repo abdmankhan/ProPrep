@@ -76,8 +76,6 @@ export default function GenerateQuestionsPage({ user }) {
         { withCredentials: true }
       );
 
-
-
       // Process data from API response
       if (Array.isArray(data) && data.length > 0) {
         // Map through questions and add a selected property
@@ -130,7 +128,6 @@ export default function GenerateQuestionsPage({ user }) {
       const formattedQuestions = selected.map((q) => {
         // Format topics array correctly - use question's topics if available
         let questionTopics = q.topics;
-
         // If no topics are set, use selected topic IDs
         if (
           !questionTopics ||
@@ -142,7 +139,6 @@ export default function GenerateQuestionsPage({ user }) {
             topicName: topicInfo[topicId] || "Unknown",
           }));
         }
-
         return {
           text: q.text || q.question || "",
           options: Array.isArray(q.options) ? q.options : [],
@@ -150,6 +146,7 @@ export default function GenerateQuestionsPage({ user }) {
           lod: Number(lod),
           topics: questionTopics,
           questionType: q.questionType || "MCQ",
+          explanation: q.explanation || "",
         };
       });
       await axios.post(
@@ -315,10 +312,38 @@ export default function GenerateQuestionsPage({ user }) {
 
                   <div className="pl-2 space-y-1">
                     {Array.isArray(q.options) ? (
-                      q.options.map((opt, oi) => <p key={oi}>• {opt}</p>)
+                      q.options.map((opt, oi) => (
+                        <p
+                          key={oi}
+                          className={
+                            oi === q.correct
+                              ? "text-green-600 font-semibold bg-green-50 rounded px-1"
+                              : ""
+                          }
+                        >
+                          • {opt}
+                        </p>
+                      ))
                     ) : (
                       <p className="text-red-500">No options available</p>
                     )}
+                  </div>
+
+                  {/* Explanation field */}
+                  <div className="mt-2">
+                    <Label className="text-xs text-gray-600">Explanation</Label>
+                    <Input
+                      value={q.explanation || ""}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setPreview((prev) => {
+                          const cp = [...prev];
+                          cp[i].explanation = val;
+                          return cp;
+                        });
+                      }}
+                      placeholder="Add or edit explanation for this question"
+                    />
                   </div>
                 </div>
               </div>

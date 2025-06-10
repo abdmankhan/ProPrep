@@ -64,13 +64,15 @@ const generateQuestions = asyncHandler(async (req, res) => {
   - Question type: ${questionType || "MCQ"}
   
   For each question, please specify which topics from the list above are covered by that question (one or more).
+  For each question, also provide a clear and concise explanation for the correct answer (in an 'explanation' field).
   
   Return a JSON array where each object has the following structure:
   {
     "question": "The question text here",
     "options": ["Option A", "Option B", "Option C", "Option D"],
     "correctIndex": 0, // Index of the correct answer (0-3)
-    "topics": ["Topic Name 1", "Topic Name 2"] // List of topic names that this question covers (from the provided list)
+    "topics": ["Topic Name 1", "Topic Name 2"], // List of topic names that this question covers (from the provided list)
+    "explanation": "A short explanation for the correct answer."
   }`;
 
   const generated = await callGemini(prompt);
@@ -110,6 +112,7 @@ const generateQuestions = asyncHandler(async (req, res) => {
       lod,
       questionType: questionType || "MCQ", // Use the requested question type
       createdBy: req.user?._id,
+      explanation: q.explanation || "",
     };
   });
   // console.log("Formatted Questions:", formattedQuestions);
@@ -154,6 +157,7 @@ const uploadQuestions = async (req, res) => {
         topics,
         createdBy: createdByUser,
         questionType: q.questionType || "Unknown",
+        explanation: q.explanation || "",
       };
     });
 
@@ -172,7 +176,7 @@ const uploadQuestions = async (req, res) => {
 // @route   POST /api/admin/mcq/generate-test
 // @access  Private
 const getTestQuestions = asyncHandler(async (req, res) => {
-  const {subjectIds, lod, count} = req.body;
+  const { subjectIds, lod, count } = req.body;
   const questions = await Question.aggregate([
     {
       $match: {
@@ -192,26 +196,36 @@ const getTestQuestions = asyncHandler(async (req, res) => {
     },
   ]);
   if (questions.length === 0) {
-    return res.status(404).json({ error: "No questions found for the selected criteria." });
+    return res
+      .status(404)
+      .json({ error: "No questions found for the selected criteria." });
   }
 
   res.json(questions);
-})
+});
 
 // @desc    Generate a test based on selected subject
 // @route   POST /api/admin/mcq/generate-test
 // @access  Private
-const generateTest = asyncHandler( async (req, res) => {
-  const { name, subjectIds, questionIds, totalQuestions, timeLimit, shuffleQuestions, shuffleOptions } = req.body;
-  
+const generateTest = asyncHandler(async (req, res) => {
+  const {
+    name,
+    subjectIds,
+    questionIds,
+    totalQuestions,
+    timeLimit,
+    shuffleQuestions,
+    shuffleOptions,
+  } = req.body;
+
   // if (!name || !subjectIds || !Array.isArray(subjectIds) || subjectIds.length === 0) {
   //   return res.status(400).json({ error: "Invalid test data provided." });
   // }
 
   const test = await Test.create({
     name,
-    subjects: subjectIds.map(id => new mongoose.Types.ObjectId(id)),
-    questionIds: questionIds.map(id => new mongoose.Types.ObjectId(id)),
+    subjects: subjectIds.map((id) => new mongoose.Types.ObjectId(id)),
+    questionIds: questionIds.map((id) => new mongoose.Types.ObjectId(id)),
     totalQuestions,
     timeLimit,
     shuffleQuestions,
@@ -220,6 +234,14 @@ const generateTest = asyncHandler( async (req, res) => {
   });
 
   res.status(201).json(test);
-})
+});
 
-export { getSubjects, addTopic, getTopics, generateQuestions, uploadQuestions, getTestQuestions, generateTest };
+export {
+  getSubjects,
+  addTopic,
+  getTopics,
+  generateQuestions,
+  uploadQuestions,
+  getTestQuestions,
+  generateTest,
+};

@@ -26,9 +26,10 @@ const questionSchema = new mongoose.Schema(
     // Add question type
     questionType: {
       type: String,
-      enum: ["MCQ", "Multiple Correct", "Type in the answer(TITA)","Unknown"],
+      enum: ["MCQ", "Multiple Correct", "Type in the answer(TITA)", "Unknown"],
       default: "MCQ",
     },
+    explanation: { type: String }, // <-- add explanation field
   },
   { timestamps: true }
 );
