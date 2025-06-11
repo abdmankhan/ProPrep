@@ -1,11 +1,14 @@
 import { create } from "zustand";
 import axios from "axios";
+import {persist} from "zustand/middleware";
 import { toast } from "sonner";
 import { config } from "@/lib/config";
 
-const useAuthStore = create((set) => ({
+const useAuthStore = create((set, get) => ({
   user: null,
   isLoading: false,
+  isAuthenticated: false,
+  setUser: (user) => set({ user, isAuthenticated: !!user }),
 
   login: async (email, password) => {
     set({ isLoading: true });
@@ -142,10 +145,10 @@ const useAuthStore = create((set) => ({
         withCredentials: true,
       });
       // console.log(res.data);
-      set({ user: res.data });
+      set({ user: res.data, isAuthenticated: true });
       return res.data; // Return data for console logging in component
     } catch (error) {
-      set({ user: null });
+      set({ user: null, isAuthenticated: false });
       // Don't show toast for fetchUser as it's used for session checks
       throw error;
     } finally {
@@ -195,6 +198,14 @@ const useAuthStore = create((set) => ({
       set({ isLoading: false });
     }
   },
-}));
+}),
+{
+  name: "auth-storage",
+  pertialize: (state) => ({
+    user: state.user,
+    isAuthenticated: state.isAuthenticated,
+  })
+}
+);
 
 export default useAuthStore;

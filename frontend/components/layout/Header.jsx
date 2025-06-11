@@ -20,11 +20,14 @@ const NAVY_ACCENT = "#2563eb";
 
 const navLinks = [
   { name: "Home", href: "/", key: "home" },
-  { name: "Problems", href: "/problems", key: "problems" },
-  { name: "Contests", href: "/contests", key: "contests" },
-  { name: "Discuss", href: "/discuss", key: "discuss" },
-  { name: "Interview", href: "/interview", key: "interview" },
-  { name: "Store", href: "/store", key: "store" },
+  { name: "Dashboard", href: "/dashboard", key: "dashboard" },
+  { name: "Practice", href: "/practice", key: "practice" },
+  { name: "Mock Interview", href: "/interviews", key: "mock-interview" },
+  // { name: "Problems", href: "/problems", key: "problems" },
+  // { name: "Contests", href: "/contests", key: "contests" },
+  // { name: "Discuss", href: "/discuss", key: "discuss" },
+  // { name: "Interview", href: "/interview", key: "interview" },
+  // { name: "Store", href: "/store", key: "store" },
 ];
 
 const Header = () => {
@@ -60,7 +63,7 @@ const Header = () => {
                 <i className="fas fa-bolt text-lg md:text-xl"></i>
               </div>
               <span className="text-xl md:text-2xl font-bold text-[#0f172a] group-hover:text-sky-600 transition-colors font-inter">
-                PrepGenius
+                ProPrep
               </span>
             </a>
             {/* Desktop Nav Links */}
@@ -103,8 +106,8 @@ const Header = () => {
                     variant="ghost"
                     className="!rounded-full p-0 border-2 border-sky-400"
                   >
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage src={user.avatar} />
+                    <Avatar className="h-12 w-12 !rounded-full overflow-hidden border-2 border-sky-400">
+                      <AvatarImage src={user.avatar} className="object-cover w-full h-full !rounded-full" />
                       <AvatarFallback className="font-inter text-lg">
                         {user.name?.charAt(0) || "U"}
                       </AvatarFallback>
@@ -128,12 +131,6 @@ const Header = () => {
                   >
                     <i className="fas fa-user mr-2"></i> My profile
                   </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => router.push("/settings")}
-                    className="hover:bg-sky-200 font-inter"
-                  >
-                    <i className="fas fa-cog mr-2"></i> Account settings
-                  </DropdownMenuItem>
                   <DropdownMenuSeparator className="bg-sky-200" />
                   <DropdownMenuItem
                     onClick={handleLogout}
@@ -146,7 +143,7 @@ const Header = () => {
             ) : (
               <>
                 <Button
-                  className="!rounded-full border-sky-400 text-[#0f172a] hover:bg-sky-400 hover:text-white px-6 py-2.5 font-semibold transition-colors font-inter whitespace-nowrap"
+                  className="!rounded-full border border-sky-400 bg-white text-[#0f172a] hover:bg-sky-400 hover:text-white px-6 py-2.5 font-semibold transition-colors font-inter whitespace-nowrap"
                   onClick={() => router.push("/auth/signin")}
                 >
                   Sign In
@@ -181,8 +178,8 @@ const Header = () => {
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-sky-100 cursor-pointer">
-                        <Avatar className="h-10 w-10 border-2 border-sky-400">
-                          <AvatarImage src={user.avatar} />
+                        <Avatar className="h-10 w-10 !rounded-full overflow-hidden border-2 border-sky-400">
+                          <AvatarImage src={user.avatar} className="object-cover w-full h-full !rounded-full" />
                           <AvatarFallback className="font-inter text-base">
                             {user.name?.charAt(0) || "U"}
                           </AvatarFallback>
@@ -216,15 +213,6 @@ const Header = () => {
                       >
                         <i className="fas fa-user mr-2"></i> My profile
                       </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => {
-                          router.push("/settings");
-                          setIsMobileMenuOpen(false);
-                        }}
-                        className="hover:bg-sky-200 font-inter"
-                      >
-                        <i className="fas fa-cog mr-2"></i> Account settings
-                      </DropdownMenuItem>
                       <DropdownMenuSeparator className="bg-sky-200" />
                       <DropdownMenuItem
                         onClick={() => {
@@ -242,7 +230,7 @@ const Header = () => {
               {!user && (
                 <div className="flex flex-col space-y-2 pt-2 px-2">
                   <Button
-                    className="!rounded-full border-sky-400 text-[#0f172a] hover:bg-sky-400 hover:text-white px-6 py-2.5 font-semibold transition-colors font-inter"
+                    className="!rounded-full border border-sky-400 bg-white text-[#0f172a] hover:bg-sky-400 hover:text-white px-6 py-2.5 font-semibold transition-colors font-inter"
                     onClick={() => {
                       router.push("/auth/signin");
                       setIsMobileMenuOpen(false);

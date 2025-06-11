@@ -20,9 +20,11 @@ import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import useAuthStore from "@/lib/store/auth-store";
 import { format } from "date-fns";
+import { useRouter } from "next/navigation";
 
 const ProfilePage = () => {
-  const { user, fetchUser, updateProfile, updatePassword } = useAuthStore();
+  const { user, isAuthenticated, fetchUser, updateProfile, updatePassword } =
+    useAuthStore();
   const [activeTab, setActiveTab] = useState("profile");
   const [isEditing, setIsEditing] = useState(false);
   const [skills, setSkills] = useState([]);
@@ -43,13 +45,23 @@ const ProfilePage = () => {
     },
   });
 
+  const router = useRouter();
+
   // Fetch user data when component mounts
   useEffect(() => {
+    // If not authenticated, redirect immediately
+    if (!isAuthenticated) {
+      router.replace("/auth/signin");
+      return;
+    }
+    // Only fetch user if authenticated
     const loadUserData = async () => {
       try {
         setIsLoading(true);
         await fetchUser();
       } catch (error) {
+        router.replace("/auth/signin");
+        // Handle error if user data fails to load
         console.error("Failed to load user data:", error);
         toast({
           title: "Error",
@@ -60,9 +72,8 @@ const ProfilePage = () => {
         setIsLoading(false);
       }
     };
-
     loadUserData();
-  }, [fetchUser, toast]);
+  }, [isAuthenticated]);
 
   // Update form data when user data changes
   useEffect(() => {

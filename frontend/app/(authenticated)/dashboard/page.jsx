@@ -16,8 +16,10 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { PerformanceChart } from "@/components/ui/charts/PerformanceChart";
 import { AccuracyChart } from "@/components/ui/charts/AccuracyChart";
-import { TrendingUp, TrendingDown } from "lucide-react";
+import { TrendingUp, TrendingDown, Router } from "lucide-react";
 import useAuthStore from "@/lib/store/auth-store";
+import { useRouter } from "next/navigation";
+import { set } from "date-fns";
 
 function getLast7Days() {
   const now = new Date();
@@ -97,23 +99,29 @@ const ICONS = {
 };
 
 export default function AnalyticsPage() {
-  const { user, fetchUser } = useAuthStore();
+  const { user, isAuthenticated, fetchUser } = useAuthStore();
+  const router = useRouter();
+
+  useEffect(() => {
+    async function loadUser() {
+      try {
+        const u = await fetchUser();
+        if (!u || !u._id) {
+          router.replace("/auth/signin");
+        }
+      } catch (error) {
+        router.replace("/auth/signin");
+      }
+    }
+    if (!isAuthenticated) {
+      loadUser();
+    }
+  }, []);
 
   const [submissions, setSubmissions] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showAll, setShowAll] = useState(false);
-  useEffect(() => {
-    async function loadUser() {
-      try {
-        await fetchUser();
-      } catch (error) {
-        console.error("Failed to fetch user data:", error);
-      }
-    }
-    loadUser();
-  }, []);
-
   useEffect(() => {
     async function fetchAnalytics() {
       setLoading(true);

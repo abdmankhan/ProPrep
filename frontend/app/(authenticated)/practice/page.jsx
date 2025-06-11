@@ -28,8 +28,28 @@ import {
 } from "@/components/ui/popover";
 import axios from "axios";
 import { toast } from "sonner";
+import useAuthStore from "@/lib/store/auth-store";
+import { useRouter } from "next/navigation";
 
 export default function PracticeTestsPage() {
+  const { user, isAuthenticated, fetchUser} = useAuthStore();
+  const router = useRouter();
+
+  useEffect(() => {
+    async function checkUser() {
+      if (!user) {
+        try {
+          await fetchUser();
+        } catch (error) {
+          router.replace("/auth/signin");
+        }
+      } else router.replace("/auth/signin");
+    }
+    if(!isAuthenticated) {
+      checkUser();
+    }
+  }, []);
+
   const [filter, setFilter] = useState("all");
   const [subject, setSubject] = useState("all"); // Set initial value to 'all'
   const [test, setTests] = useState([]); // be cautious, it is test

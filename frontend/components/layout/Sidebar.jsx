@@ -24,12 +24,21 @@ export default function Sidebar({
       {/* Sidebar content */}
       <div className="p-4 flex items-center justify-between border-b border-slate-200">
         {sidebarOpen ? (
-          <div className="flex items-center">
-            <i className="fas fa-code-branch text-blue-600 text-xl mr-2"></i>
-            <span className="font-bold text-lg">PrepMaster</span>
-          </div>
+          <Link
+            href="/"
+            className="flex items-center gap-3 group shrink-0 cursor-pointer"
+          >
+            <div className="w-10 h-10 md:w-11 md:h-11 bg-gradient-to-br from-sky-400 to-sky-600 rounded-full flex items-center justify-center text-white font-bold shadow-md group-hover:scale-105 transition-transform">
+              <i className="fas fa-bolt text-lg md:text-xl animate-pulse"></i>
+            </div>
+            <span className="text-xl md:text-2xl font-bold text-[#0f172a] group-hover:text-sky-600 transition-colors font-inter">
+              ProPrep
+            </span>
+          </Link>
         ) : (
-          <i className="fas fa-code-branch text-blue-600 text-xl mx-auto"></i>
+          <div className="w-10 h-10 md:w-11 md:h-11 bg-gradient-to-br from-sky-400 to-sky-600 rounded-full flex items-center justify-center text-white font-bold shadow-md mx-auto">
+            <i className="fas fa-bolt text-lg md:text-xl animate-pulse"></i>
+          </div>
         )}
 
         <Button

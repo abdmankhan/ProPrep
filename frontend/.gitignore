@@ -23,6 +23,7 @@
 # misc
 .DS_Store
 *.pem
+/app/react-hook-form
 
 # debug
 npm-debug.log*
