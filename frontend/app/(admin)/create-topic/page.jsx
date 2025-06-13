@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { config } from "@/lib/config";
 
 export default function CreateTopicPage() {
   const [subjects, setSubjects] = useState([]);
@@ -23,7 +24,7 @@ export default function CreateTopicPage() {
     const fetchSubjects = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5555/api/admin/mcq/subjects",
+          `${config.apiUrl}/api/admin/mcq/subjects`,
           { withCredentials: true }
         );
         setSubjects(response.data);
@@ -108,7 +109,7 @@ export default function CreateTopicPage() {
       for (const topicName of topicNames) {
         try {
           const response = await axios.post(
-            "http://localhost:5555/api/admin/mcq/topics",
+            `${config.apiUrl}/api/admin/mcq/topics`,
             {
               subjectId,
               name: topicName,

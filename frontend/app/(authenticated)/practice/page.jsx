@@ -30,9 +30,10 @@ import axios from "axios";
 import { toast } from "sonner";
 import useAuthStore from "@/lib/store/auth-store";
 import { useRouter } from "next/navigation";
+import { config } from "@/lib/config";
 
 export default function PracticeTestsPage() {
-  const { user, isAuthenticated, fetchUser} = useAuthStore();
+  const { user, isAuthenticated, fetchUser } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
@@ -45,7 +46,7 @@ export default function PracticeTestsPage() {
         }
       } else router.replace("/auth/signin");
     }
-    if(!isAuthenticated) {
+    if (!isAuthenticated) {
       checkUser();
     }
   }, []);
@@ -60,7 +61,7 @@ export default function PracticeTestsPage() {
   useEffect(() => {
     const fetchTaken = async () => {
       try {
-        const res = await axios.get("http://localhost:5555/api/tests/taken", {
+        const res = await axios.get(`${config.apiUrl}/api/tests/taken`, {
           withCredentials: true,
         });
         setTakenTestIds(res.data.takenTestIds || []);
@@ -100,7 +101,7 @@ export default function PracticeTestsPage() {
   useEffect(() => {
     const fetchTests = async () => {
       try {
-        const response = await axios.get("http://localhost:5555/api/tests", {
+        const response = await axios.get(`${config.apiUrl}/api/tests`, {
           withCredentials: true,
         });
         setTests(response.data);
@@ -123,7 +124,7 @@ export default function PracticeTestsPage() {
         ids.map(async (id) => {
           try {
             const res = await axios.get(
-              `http://localhost:5555/api/tests/leaderboard/${id}`,
+              `${config.apiUrl}/api/tests/leaderboard/${id}`,
               { withCredentials: true }
             );
             newLeaderboards[id] = res.data || [];

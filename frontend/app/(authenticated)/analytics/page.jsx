@@ -18,6 +18,7 @@ import { PerformanceChart } from "@/components/ui/charts/PerformanceChart";
 import { AccuracyChart } from "@/components/ui/charts/AccuracyChart";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import useAuthStore from "@/lib/store/auth-store";
+import { config } from "@/lib/config";
 
 function getLast7Days() {
   const now = new Date();
@@ -119,7 +120,7 @@ export default function AnalyticsPage() {
       setLoading(true);
       try {
         const res = await axios.get(
-          "http://localhost:5555/api/tests/user/analytics",
+          `${config.apiUrl}/api/tests/user/analytics`,
           {
             withCredentials: true,
           }

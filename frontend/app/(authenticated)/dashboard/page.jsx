@@ -20,6 +20,7 @@ import { TrendingUp, TrendingDown, Router } from "lucide-react";
 import useAuthStore from "@/lib/store/auth-store";
 import { useRouter } from "next/navigation";
 import { set } from "date-fns";
+import { config } from "@/lib/config";
 
 function getLast7Days() {
   const now = new Date();
@@ -127,7 +128,7 @@ export default function AnalyticsPage() {
       setLoading(true);
       try {
         const res = await axios.get(
-          "http://localhost:5555/api/tests/user/analytics",
+          `${config.apiUrl}/api/tests/user/analytics`,
           {
             withCredentials: true,
           }

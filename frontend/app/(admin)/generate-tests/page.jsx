@@ -25,6 +25,7 @@ import {
 import { Pagination } from "@/components/ui/pagination";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { config } from "@/lib/config";
 
 export default function GenerateTests() {
   const [subjects, setSubjects] = useState([]);
@@ -55,7 +56,7 @@ export default function GenerateTests() {
     const fetchSubjects = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5555/api/admin/mcq/subjects",
+          `${config.apiUrl}/api/admin/mcq/subjects`,
           {
             withCredentials: true,
           }
@@ -108,7 +109,7 @@ export default function GenerateTests() {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:5555/api/admin/mcq/get-test-questions",
+        `${config.apiUrl}/api/admin/mcq/get-test-questions`,
         {
           subjectIds: selectedSubjects,
           lod: parseInt(lod),
@@ -170,7 +171,7 @@ export default function GenerateTests() {
     setTestCreating(true);
     try {
       const response = await axios.post(
-        "http://localhost:5555/api/admin/mcq/generate-test",
+        `${config.apiUrl}/api/admin/mcq/generate-test`,
         {
           name: testName,
           subjectIds: selectedSubjects,

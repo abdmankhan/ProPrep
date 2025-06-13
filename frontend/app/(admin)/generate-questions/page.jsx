@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { config } from "@/lib/config";
 
 export default function GenerateQuestionsPage({ user }) {
   const [subjects, setSubjects] = useState([]);
@@ -27,7 +28,7 @@ export default function GenerateQuestionsPage({ user }) {
     const fetchSubjects = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5555/api/admin/mcq/subjects",
+          `${config.apiUrl}/api/admin/mcq/subjects`,
           {
             withCredentials: true,
           }
@@ -45,7 +46,7 @@ export default function GenerateQuestionsPage({ user }) {
     const fetchTopics = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5555/api/admin/mcq/topics?subjectId=${subjectId}`,
+          `${config.apiUrl}/api/admin/mcq/topics?subjectId=${subjectId}`,
           { withCredentials: true }
         );
         setTopics(response.data);
@@ -65,7 +66,7 @@ export default function GenerateQuestionsPage({ user }) {
     try {
       setIsLoading(true);
       const { data } = await axios.post(
-        "http://localhost:5555/api/admin/mcq/generate-questions",
+        `${config.apiUrl}/api/admin/mcq/generate-questions`,
         {
           subjectId,
           topicIds,
@@ -150,7 +151,7 @@ export default function GenerateQuestionsPage({ user }) {
         };
       });
       await axios.post(
-        "http://localhost:5555/api/admin/mcq/upload-questions",
+        `${config.apiUrl}/api/admin/mcq/upload-questions`,
         {
           subjectId,
           topicId: topicIds[0], // Used as fallback for any question without topics

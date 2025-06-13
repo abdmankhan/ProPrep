@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import axios from "axios";
 import { set } from "date-fns";
 import { useRouter } from "next/navigation";
+import { config } from "@/lib/config";
 
 export default function QuestionPlayerPage({ params }) {
   // Get test id from params
@@ -26,7 +27,7 @@ export default function QuestionPlayerPage({ params }) {
     setLoading(true);
     const fetchTest = async () => {
       const response = await axios.post(
-        `http://localhost:5555/api/tests/${id}`,
+        `${config.apiUrl}/api/tests/${id}`,
         {},
         { withCredentials: true }
       );
@@ -40,7 +41,7 @@ export default function QuestionPlayerPage({ params }) {
     if (!testData) return;
     const fetchQuestions = async () => {
       const response = await axios.post(
-        "http://localhost:5555/api/tests/questions",
+        `${config.apiUrl}/api/tests/questions`,
         { questionIds: testData?.questionIds || [] },
         { withCredentials: true }
       );
@@ -108,7 +109,7 @@ export default function QuestionPlayerPage({ params }) {
     const timeTaken = testData.timeLimit * 60 - timeLeft;
     try {
       const response = await axios.post(
-        `http://localhost:5555/api/tests/submit/${testData._id}`,
+        `${config.apiUrl}/api/tests/submit/${testData._id}`,
         {
           testId: testData._id,
           questionIds: questions.map((q) => q._id),

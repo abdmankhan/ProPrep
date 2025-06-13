@@ -11,6 +11,7 @@ import dynamic from "next/dynamic";
 import axios from "axios";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { config } from "@/lib/config";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 // Dynamically import chart to avoid SSR issues
@@ -38,7 +39,7 @@ export default function TestResultPage({ params }) {
       setError("");
       try {
         const response = await axios.post(
-          `http://localhost:5555/api/tests/result`,
+          `${config.apiUrl}/api/tests/result`,
           { testResultId },
           { withCredentials: true }
         );
@@ -57,13 +58,13 @@ export default function TestResultPage({ params }) {
       try {
         // Leaderboard: top 5 scores for this test
         const lbRes = await axios.get(
-          `http://localhost:5555/api/tests/leaderboard/${testId}`,
+          `${config.apiUrl}/api/tests/leaderboard/${testId}`,
           { withCredentials: true }
         );
         setLeaderboard(lbRes.data || []);
         // Test meta: name, subjects
         const metaRes = await axios.post(
-          `http://localhost:5555/api/tests/${testId}`,
+          `${config.apiUrl}/api/tests/${testId}`,
           {},
           { withCredentials: true }
         );
@@ -143,7 +144,7 @@ export default function TestResultPage({ params }) {
     incorrect = 0,
     notAttempted = 0;
   answers.forEach((a) => {
-    if (a.answerIndex === -1|| a.answerIndex === undefined) {
+    if (a.answerIndex === -1 || a.answerIndex === undefined) {
       notAttempted++;
     } else if (a.question && a.answerIndex === a.question.correct) {
       correct++;
