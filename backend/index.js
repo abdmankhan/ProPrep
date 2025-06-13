@@ -15,11 +15,17 @@ const app = express();
 app.use(cookieParser());
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
-app.use(cors({
-  origin: 'http://localhost:3333',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3333",
+      "https://pro-prep-nine.vercel.app/",
+      "https://vercel.com/abdmankhans-projects/pro-prep/EtLvbDFB2jiALJeN9tw87TaBSkbX",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    credentials: true,
+  })
+);
 
 // RestAPI Routes
 
