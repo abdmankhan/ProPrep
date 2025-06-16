@@ -19,7 +19,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3333",
-      "https://pro-prep-nine.vercel.app/",
+      "https://pro-prep-nine.vercel.app",
       "https://vercel.com/abdmankhans-projects/pro-prep/EtLvbDFB2jiALJeN9tw87TaBSkbX",
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
